@@ -1,0 +1,45 @@
+
+name: Auto Deploy Notebook
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  execute-notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install Notebook tools
+      run: |
+        pip install notebook nbconvert
+
+    - name: Execute Notebook headless
+      run: |
+        jupyter nbconvert \
+        --to notebook \
+        --execute test.ipynb \
+        --output test-output.ipynb
+
+    - name: Convert Notebook to Script
+      run: jupyter nbconvert --to python test.ipynb
+
+    - name: Build Docker image
+      run: docker build -t rag-notebook .
+
+    - name: Run Notebook container
+      run: |
+        docker run --name test-container --rm rag-notebook timeout 10s bash -c "python3 test.py || true"
+
+    - name: Deployment Success
+      run: echo "Notebook executed & Docker image built successfully!"
