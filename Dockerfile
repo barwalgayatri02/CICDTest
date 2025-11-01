@@ -10,5 +10,5 @@ COPY . .
 
 # Notebook environment like Colab
 EXPOSE 8888
-
+#Testing
 CMD ["python3", "-m", "notebook", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
