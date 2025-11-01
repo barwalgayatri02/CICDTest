@@ -1,0 +1,14 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirement.txt
+
+# Copy your colab notebook files
+COPY . .
+
+# Notebook environment like Colab
+EXPOSE 8888
+
+CMD ["python3", "-m", "notebook", "--ip=0.0.0.0", "--no-browser", "--allow-root"]
